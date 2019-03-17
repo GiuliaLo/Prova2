@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Prova2</string>
+    <string name="action_settings">Settings</string>
+    <string name="tab1">Camera</string>
+    <string name="tab2">Notebooks</string>
+    <string name="fragment1">Hello Camera</string>
+    <string name="fragment2">Hello Notebooks</string>
+</resources>
