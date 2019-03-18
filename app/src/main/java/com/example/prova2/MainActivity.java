@@ -2,6 +2,7 @@ package com.example.prova2;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,27 +36,55 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Toolbar mToolbar;
+    private TabLayout mTab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
+        mTab = findViewById(R.id.toolbar);
+
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            // This method will be invoked when a new page becomes selected.
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 0) {
+                    showToolbar(true);
+                } else
+                    showToolbar(false);
+            }
+
+            // This method will be invoked when the current page is scrolled
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // Code goes here
+            }
+
+            // Called when the scroll state changes:
+            // SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Code goes here
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Replace with add notebook action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -84,14 +114,28 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // hide/show toolbar
+    public void showToolbar(boolean show) {
+        if (show) {
+            mTab.setVisibility(View.VISIBLE);
+            mToolbar.setVisibility(View.VISIBLE);
+        } else {
+            mTab.setVisibility(View.GONE);
+            mToolbar.setVisibility(View.GONE);
+        }
+
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+
+    //public static class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
+        /*
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public PlaceholderFragment() {
@@ -101,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
+        /*
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
@@ -118,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
             */
+        /*
             switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
                     View cameraView = inflater.inflate(R.layout.fragment_camera, container, false);
@@ -128,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return inflater.inflate(R.layout.fragment_home, container, false);
         }
-    }
+    }*/
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -144,13 +190,14 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            Log.i("MAIN", "position: " + position);
 
-            /*if (position == 0)
-                return CameraFragment.newInstance(position+1);
-            else
+            if (position == 0)
                 return HomeFragment.newInstance(position+1);
-                */
-            return PlaceholderFragment.newInstance(position + 1);
+            else
+                return CameraFragment.newInstance(position+1);
+
+            //return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
@@ -163,10 +210,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             if (position == 0)
-                return "Camera";
+                return "Notebooks";
                 //return findViewById(R.id.tab1);
             else
-                return "Notebooks";
+                return "Camera";
                 //return findViewById(R.id.tab2);
         }
     }

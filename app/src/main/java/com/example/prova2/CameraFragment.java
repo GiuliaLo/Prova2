@@ -1,12 +1,28 @@
 package com.example.prova2;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
+
+import java.io.IOException;
 
 
 /**
@@ -18,6 +34,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class CameraFragment extends Fragment {
+    private static final String TAG = "CameraFragment";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     /*
@@ -26,6 +44,8 @@ public class CameraFragment extends Fragment {
 */
 
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    private CameraSource mCameraSource;
 
     // TODO: Rename and change types of parameters
     /*
@@ -72,8 +92,76 @@ public class CameraFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_camera, container, false);
+        Log.i(TAG, "onCreateView()");
+
+        View view = inflater.inflate(R.layout.fragment_camera, container, false);
+
+
+        final SurfaceView cameraView = view.findViewById(R.id.camera_view);
+
+
+        TextRecognizer textRecognizer = new TextRecognizer.Builder(getContext()).build();
+
+        mCameraSource = new CameraSource
+                .Builder(getActivity(), textRecognizer)
+                .setAutoFocusEnabled(true)
+                .build();
+
+
+        cameraView.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+
+                try {
+                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.CAMERA}, 0);
+                    }
+                    mCameraSource.start(cameraView.getHolder());
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                if(mCameraSource != null)
+                    mCameraSource.stop();
+            }
+        });
+
+
+        textRecognizer.setProcessor(new Detector.Processor<TextBlock>() {
+
+            @Override
+            public void release() {
+            }
+
+            @Override
+            public void receiveDetections(Detector.Detections<TextBlock> detections) {
+
+                SparseArray<TextBlock> items = detections.getDetectedItems();
+                for (int i = 0; i < items.size(); ++i) {
+                    TextBlock item = items.valueAt(i);
+                    if (item != null && item.getValue() != null) {
+                        Log.i(TAG, "Text detected! " + item.getValue());
+
+                    }
+                }
+            }
+
+
+        });
+
+
+
+        return view;
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -85,12 +173,12 @@ public class CameraFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+//        if (context instanceof OnFragmentInteractionListener) {
+//            mListener = (OnFragmentInteractionListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
     }
 
     @Override

@@ -5,4 +5,7 @@
     <string name="tab2">Notebooks</string>
     <string name="fragment1">Hello Camera</string>
     <string name="fragment2">Hello Notebooks</string>
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="request_permission">This app needs camera permission.</string>
 </resources>
