@@ -1,26 +1,22 @@
 package com.example.prova2;
 
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.TextView;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CameraFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -38,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private Toolbar mToolbar;
     private TabLayout mTab;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
         mTab = findViewById(R.id.tab);
 
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -62,8 +61,12 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 if(position == 0) {
                     showToolbar(true);
-                } else
+                    fab.show();
+
+                } else {
                     showToolbar(false);
+                    fab.hide();
+                }
             }
 
             // This method will be invoked when the current page is scrolled
@@ -80,17 +83,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                Fragment addNotebook = AddNotebook.newInstance();
+                transaction.replace(R.id.container,addNotebook); // give your fragment container id in first parameter
+                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
+                transaction.commit();
+                /*
                 Snackbar.make(view, "Replace with add notebook action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                        */
             }
         });
-*/
+
     }
 
 
@@ -128,15 +139,30 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    //receive text read from CameraFragment
+    @Override
+    public void onFragmentInteraction(String parameter) {
+        Log.i("MainActivity", "Received: " + parameter + " from CameraFragment");
+
+        // show HomeFragment
+        mViewPager.setCurrentItem(0);
+
+        // set text in HomeFragment
+        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().getFragments().get(0);
+        homeFragment.setOcrText(parameter);
+
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
 
     //public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
 /*
         private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -216,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
                 //return findViewById(R.id.tab1);
             else
                 return "Camera";
-                //return findViewById(R.id.tab2);
+            //return findViewById(R.id.tab2);
         }
     }
 }

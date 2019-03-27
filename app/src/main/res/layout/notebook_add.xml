@@ -3,21 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:tag="HomeFragment"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".HomeFragment">
+    tools:context=".AddNotebook">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/fragment2" />
-
-    <TextView
-        android:id="@+id/ocr_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="" />
+        android:text="@string/hello_blank_fragment" />
 
 </FrameLayout>
