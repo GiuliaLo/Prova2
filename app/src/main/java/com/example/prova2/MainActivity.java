@@ -1,6 +1,9 @@
 package com.example.prova2;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,12 +12,20 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.prova2.database.NbListAdapter;
+import com.example.prova2.database.Notebook;
+import com.example.prova2.database.NotebooksViewModel;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements CameraFragment.OnFragmentInteractionListener {
 
@@ -34,7 +45,9 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
     private ViewPager mViewPager;
     private Toolbar mToolbar;
     private TabLayout mTab;
-    private FloatingActionButton fab;
+
+    //private NotebooksViewModel mNotebooksViewModel;
+//    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
 
         mTab = findViewById(R.id.tab);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        //   fab = (FloatingActionButton) findViewById(R.id.fab);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -61,11 +74,11 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
             public void onPageSelected(int position) {
                 if(position == 0) {
                     showToolbar(true);
-                    fab.show();
+                    //    fab.show();
 
                 } else {
                     showToolbar(false);
-                    fab.hide();
+                    //    fab.hide();
                 }
             }
 
@@ -83,25 +96,22 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
             }
         });
 
+        /*
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        final NbListAdapter adapter = new NbListAdapter(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        mNotebooksViewModel = ViewModelProviders.of(this).get(NotebooksViewModel.class);
 
-        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mNotebooksViewModel.getAllNotebooks().observe(this, new Observer<List<Notebook>>() {
             @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                Fragment addNotebook = AddNotebook.newInstance();
-                transaction.replace(R.id.container,addNotebook); // give your fragment container id in first parameter
-                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
-                transaction.commit();
-                /*
-                Snackbar.make(view, "Replace with add notebook action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                        */
+            public void onChanged(@Nullable final List<Notebook> notebooks) {
+                // Update the cached copy of the words in the adapter.
+                adapter.setNotebooks(notebooks);
             }
         });
-
+        */
     }
 
 
