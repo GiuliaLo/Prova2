@@ -5,4 +5,14 @@
     <string name="tab2">Notebooks</string>
     <string name="fragment1">Hello Camera</string>
     <string name="fragment2">Hello Notebooks</string>
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="request_permission">This app needs camera permission.</string>
+    <string name="button">CAPTURE TEXT</string>
+    <string name="low_storage_error">Ocr dependencies cannot be downloaded due to low device storage</string>
+    <string name="ok">OK</string>
+    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

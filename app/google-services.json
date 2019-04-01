@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "383977121530",
+    "firebase_url": "https://prova2-234918.firebaseio.com",
+    "project_id": "prova2-234918",
+    "storage_bucket": "prova2-234918.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383977121530:android:b28a97992643f868",
+        "android_client_info": {
+          "package_name": "com.example.prova2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383977121530-qaau4e275ssskd751a49dh8rocta88hl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCySu3HqpJuQXEMo2GvqdZx2sCWOV0ebxs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
