@@ -122,16 +122,16 @@ public class NotebookRepository {
 
         @Override
         protected Void doInBackground(final MyParamsDeleteFile... params) {
-            mAsyncTaskDao.deleteFile(params[0].nbName, params[0].fileNum);
+            mAsyncTaskDao.deleteFile(params[0].nbId, params[0].fileNum);
             return null;
         }
     }
 
     private static class MyParamsDeleteFile {
-        String nbName;
+        int nbId;
         int fileNum;
 
-        MyParamsDeleteFile(String nbName, int fileNum) {this.nbName = nbName; this.fileNum = fileNum;}
+        MyParamsDeleteFile(String nbName, int fileNum) {this.nbId = nbId; this.fileNum = fileNum;}
     }
 
 
