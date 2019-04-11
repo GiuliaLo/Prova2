@@ -3,18 +3,20 @@ package com.example.prova2.database;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
-@Entity(tableName = "content_table", foreignKeys = @ForeignKey(entity = Notebook.class, parentColumns = "id", childColumns = "notebook", onDelete = CASCADE, onUpdate = CASCADE), primaryKeys = {"notebook", "file_number"})
+@Entity(tableName = "content_table", foreignKeys = @ForeignKey(entity = Notebook.class, parentColumns = "id", childColumns = "notebook", onDelete = CASCADE, onUpdate = CASCADE))
 public class NotebookContent {
     @ColumnInfo(name = "notebook")
     @NonNull
     private int notebook;
 
     @NonNull
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "file_number")
     private int num;
 

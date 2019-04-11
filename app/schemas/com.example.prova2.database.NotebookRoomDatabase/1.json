@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a32d5c16414f41ef9abc07f02267265d",
+    "identityHash": "c905d025a9b25f1759cd69c45cba2968",
     "entities": [
       {
         "tableName": "notebooks_table",
@@ -32,7 +32,7 @@
       },
       {
         "tableName": "content_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`notebook` INTEGER NOT NULL, `file_number` INTEGER NOT NULL, `path` TEXT, PRIMARY KEY(`notebook`, `file_number`), FOREIGN KEY(`notebook`) REFERENCES `notebooks_table`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`notebook` INTEGER NOT NULL, `file_number` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `path` TEXT, FOREIGN KEY(`notebook`) REFERENCES `notebooks_table`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "notebook",
@@ -55,10 +55,9 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "notebook",
             "file_number"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": [
@@ -78,7 +77,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"a32d5c16414f41ef9abc07f02267265d\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"c905d025a9b25f1759cd69c45cba2968\")"
     ]
   }
 }

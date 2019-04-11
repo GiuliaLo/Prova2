@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class NotebookRepository {
     private NotebookDao mNotebookDao;
@@ -28,15 +29,15 @@ public class NotebookRepository {
         return mAllContents;
     }
 
-    LiveData<List<NotebookContent>> getAllFiles(String nb) {
+    LiveData<List<NotebookContent>> getAllFiles(int nb) {
         return mContentDao.getAllFiles(nb); //?
     }
 
-    LiveData<NotebookContent> getFile(String nb, int num) {
-        return mContentDao.getFile(nb, num); //?
+    NotebookContent getFile(int num) {
+        return mContentDao.getFile(num); //?
     }
 
-    LiveData<Integer> getLastFileNumber(String nb) {
+    LiveData<Integer> getLastFileNumber(int nb) {
         return mContentDao.getLastFileNumber(nb);
     }
 
@@ -65,11 +66,18 @@ public class NotebookRepository {
 
     //INSERT FILE
 
-    public void insertFile (NotebookContent nc) {
-        new insertContentAsyncTask(mContentDao).execute(nc);
+    public long insertFile (NotebookContent nc) {
+        try {
+            return new insertContentAsyncTask(mContentDao).execute(nc).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
-    private static class insertContentAsyncTask extends AsyncTask<NotebookContent, Void, Void> {
+    private static class insertContentAsyncTask extends AsyncTask<NotebookContent, Void, Long> {
 
         private ContentDao mAsyncTaskDao;
 
@@ -78,9 +86,8 @@ public class NotebookRepository {
         }
 
         @Override
-        protected Void doInBackground(final NotebookContent... params) {
-            mAsyncTaskDao.insertFile(params[0]);
-            return null;
+        protected Long doInBackground(final NotebookContent... params) {
+            return mAsyncTaskDao.insertFile(params[0]);
         }
     }
 
@@ -109,11 +116,11 @@ public class NotebookRepository {
 
     //DELETE FILE
 
-    public void deleteFile (String nb, int num) {
-        new deleteContentAsyncTask(mContentDao).execute(new MyParamsDeleteFile(nb, num));
+    public void deleteFile (int num) {
+        new deleteContentAsyncTask(mContentDao).execute(num);
     }
 
-    private static class deleteContentAsyncTask extends AsyncTask<MyParamsDeleteFile, Void, Void> {
+    private static class deleteContentAsyncTask extends AsyncTask<Integer, Void, Void> {
         private ContentDao mAsyncTaskDao;
 
         deleteContentAsyncTask(ContentDao dao) {
@@ -121,8 +128,9 @@ public class NotebookRepository {
         }
 
         @Override
-        protected Void doInBackground(final MyParamsDeleteFile... params) {
-            mAsyncTaskDao.deleteFile(params[0].nbId, params[0].fileNum);
+        protected Void doInBackground(final Integer... params) {
+            //mAsyncTaskDao.deleteFile(params[0].nbId, params[0].fileNum);
+            mAsyncTaskDao.deleteFile(params[0]);
             return null;
         }
     }

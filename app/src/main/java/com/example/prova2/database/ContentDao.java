@@ -10,19 +10,19 @@ import java.util.List;
 @Dao
 public interface ContentDao {
     @Insert
-    void insertFile(NotebookContent nc);
+    long insertFile(NotebookContent nc);
 
-    @Query("DELETE FROM content_table WHERE notebook = :nb AND file_number = :num")
-    void deleteFile(int nb, int num);
+    @Query("DELETE FROM content_table WHERE file_number = :num")
+    void deleteFile(int num);
 
     @Query("SELECT MAX(file_number) FROM content_table WHERE notebook = :nb")
-    LiveData<Integer> getLastFileNumber(String nb);
+    LiveData<Integer> getLastFileNumber(int nb);
 
-    @Query("SELECT * FROM content_table WHERE notebook = :nb AND file_number = :num")
-    LiveData<NotebookContent> getFile(String nb, int num);
+    @Query("SELECT * FROM content_table WHERE file_number = :num")
+    NotebookContent getFile(long num);
 
     @Query("SELECT * FROM content_table WHERE notebook = :nb ORDER BY file_number ASC")
-    LiveData<List<NotebookContent>> getAllFiles(String nb);
+    LiveData<List<NotebookContent>> getAllFiles(int nb);
 
     @Query("SELECT * FROM content_table ORDER BY notebook, file_number ASC")
     LiveData<List<NotebookContent>> getAllFiles();

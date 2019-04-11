@@ -3,6 +3,9 @@ package com.example.prova2.database;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,26 +14,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.prova2.HomeFragment;
 import com.example.prova2.R;
 
 import java.util.List;
 
 public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHolder> {
 
-class NbViewHolder extends RecyclerView.ViewHolder {
-    private final TextView nbItemView;
-    private final Button mDeleteNotebook;
-    private final Button mUpdateNotebook;
-    private final Button mInsertFile;
+    class NbViewHolder extends RecyclerView.ViewHolder {
+        private final TextView nbItemView;
+        private final Button mDeleteNotebook;
+        private final Button mUpdateNotebook;
+        private final Button mInsertFile;
 
-    private NbViewHolder(View itemView) {
-        super(itemView);
-        nbItemView = itemView.findViewById(R.id.textView);
-        mDeleteNotebook = itemView.findViewById(R.id.btn_delete);
-        mUpdateNotebook = itemView.findViewById(R.id.btn_update);
-        mInsertFile = itemView.findViewById(R.id.btn_insert);
+        private NbViewHolder(View itemView) {
+            super(itemView);
+            nbItemView = itemView.findViewById(R.id.textView);
+            mDeleteNotebook = itemView.findViewById(R.id.btn_delete);
+            mUpdateNotebook = itemView.findViewById(R.id.btn_update);
+            mInsertFile = itemView.findViewById(R.id.btn_insert);
+        }
     }
-}
 
     private final LayoutInflater mInflater;
     private List<Notebook> mNotebooks; // Cached copy of words
@@ -103,20 +107,25 @@ class NbViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("Content");
-                View viewInflated = LayoutInflater.from(mContext).inflate(R.layout.input_dialog,
+                builder.setTitle("Do you want upload a new file? Choose it!");
+                View viewInflated = LayoutInflater.from(mContext).inflate(R.layout.empty_dialog,
                         (ViewGroup) v.getParent(), false);
                 final EditText input = (EditText) viewInflated.findViewById(R.id.input);
                 builder.setView(viewInflated);
-                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("choose", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
 
-                        NotebookContent nc = new NotebookContent((mNotebooks.get(position).getId()),
-                                input.getText().toString());
 
-                        mModel.insertFile(nc);
+                        ((HomeFragment)((FragmentActivity)mContext).getSupportFragmentManager().
+                                getFragments().get(0)).chooseImage(mNotebooks.get(position).getId());
+
+
+//                        NotebookContent nc = new NotebookContent((mNotebooks.get(position).getId()),
+//                                input.getText().toString());
+//
+//                        mModel.insertFile(nc);
                     }
                 });
                 builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

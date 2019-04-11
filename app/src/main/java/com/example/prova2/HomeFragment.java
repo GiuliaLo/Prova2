@@ -1,6 +1,7 @@
 package com.example.prova2;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
@@ -17,6 +18,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,6 +27,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,6 +36,7 @@ import android.widget.Toast;
 
 import com.example.prova2.database.NbListAdapter;
 import com.example.prova2.database.Notebook;
+import com.example.prova2.database.NotebookContent;
 import com.example.prova2.database.NotebookRoomDatabase;
 import com.example.prova2.database.NotebooksViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -92,7 +96,7 @@ public class HomeFragment extends Fragment {
 
     private Uri filePath;
 
-    private final int PICK_IMAGE_REQUEST = 71;
+    public final int PICK_IMAGE_REQUEST = 71;
 
     //Firebase
     FirebaseStorage storage;
@@ -208,23 +212,23 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        btnChoose = (Button) view.findViewById(R.id.btnChoose);
-        btnUpload = (Button) view.findViewById(R.id.btnUpload);
-        imageView = (ImageView) view.findViewById(R.id.imgView);
+//        btnChoose = (Button) view.findViewById(R.id.btnChoose);
+//        btnUpload = (Button) view.findViewById(R.id.btnUpload);
+//        imageView = (ImageView) view.findViewById(R.id.imgView);
 
-        btnChoose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chooseImage();
-            }
-        });
-
-        btnUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadImage();
-            }
-        });
+//        btnChoose.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                chooseImage(-1);
+//            }
+//        });
+//
+//        btnUpload.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                uploadImage();
+//            }
+//        });
 
 
         storage = FirebaseStorage.getInstance();
@@ -258,17 +262,22 @@ public class HomeFragment extends Fragment {
         */
     }
 
-    private void chooseImage() {
+
+    private int mNb_id = -1;
+    public void chooseImage(int nb_id) {
+        mNb_id = nb_id;
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    private void uploadImage() {
+    private void uploadImage(final int nb_id) {
 
         if(filePath != null)
         {
+
+
             final ProgressDialog progressDialog = new ProgressDialog(getContext());
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
@@ -283,6 +292,33 @@ public class HomeFragment extends Fragment {
                                 public void onSuccess(Uri uri) {
                                     Uri downloadUrl = uri;
                                     //insert into db
+                                    NotebookContent nc = new NotebookContent(nb_id, downloadUrl.toString());
+                                    long id = mNotebooksViewModel.insertFile(nc);
+
+                                    Log.d(TAG, "Insert " + downloadUrl.toString() + " in notebook " + nb_id
+                                            + " with number " + id);
+                                    Toast.makeText(getActivity(), "Inserted " + downloadUrl.getPath() + " in notebook " + nb_id
+                                            + " with number " + id, Toast.LENGTH_SHORT).show();
+
+
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                    builder.setTitle("Write:");
+                                    View viewInflated = LayoutInflater.from(getActivity()).inflate(R.layout.number_dialog,
+                                            (ViewGroup) getView(), false);
+                                    final TextView input = viewInflated.findViewById(R.id.textView);
+                                    if (id < 10)
+                                        input.setText("0"+id);
+                                    else
+                                        input.setText("" + id);
+                                    builder.setView(viewInflated);
+                                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+
+                                    builder.show();
                                 }
                             });
                             progressDialog.dismiss();
@@ -304,6 +340,10 @@ public class HomeFragment extends Fragment {
                             progressDialog.setMessage("Uploaded "+(int)progress+"%");
                         }
                     });
+
+
+
+
         }
     }
 
@@ -315,10 +355,38 @@ public class HomeFragment extends Fragment {
         {
             filePath = data.getData();
             try {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Do you want to store it?");
+                View viewInflated = LayoutInflater.from(getActivity()).inflate(R.layout.image_dialog,
+                        (ViewGroup) this.getView(), false);
+
+
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), filePath);
-                imageView.setImageBitmap(bitmap);
+                final ImageView image = viewInflated.findViewById(R.id.imgView);
+                image.setImageBitmap(bitmap);
+                builder.setView(viewInflated);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        uploadImage(mNb_id);
+
+                    }
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+
+//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), filePath);
+//                imageView.setImageBitmap(bitmap);
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 e.printStackTrace();
             }

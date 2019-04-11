@@ -27,25 +27,25 @@ public class NotebooksViewModel extends AndroidViewModel {
         return mAllContents;
     }
 
-    public LiveData<List<NotebookContent>> getAllFiles(String nb) {
+    public LiveData<List<NotebookContent>> getAllFiles(int nb) {
         return mRepository.getAllFiles(nb);
     }
 
-    public LiveData<NotebookContent> getFile(String nb, int num) {
-        return mRepository.getFile(nb, num);
+    public NotebookContent getFile(int num) {
+        return mRepository.getFile(num);
     }
 
-    public LiveData<Integer> getLastFileNumber(String nb) {
+    public LiveData<Integer> getLastFileNumber(int nb) {
         return mRepository.getLastFileNumber(nb);
     }
 
     public void insertNotebook(Notebook nb) {mRepository.insertNotebook(nb);}
 
-    public void insertFile(NotebookContent nc) {mRepository.insertFile(nc);}
+    public long insertFile(NotebookContent nc) {return mRepository.insertFile(nc);}
 
     public void updateNotebook(String oldName, String newName) {mRepository.updateNotebook(oldName, newName);}
 
     public void deleteNotebook(Notebook nb) {mRepository.deleteNotebook(nb);}
 
-    public void deleteFile(String nb, int num) {mRepository.deleteFile(nb, num);}
+    public void deleteFile(int num) {mRepository.deleteFile(num);}
 }

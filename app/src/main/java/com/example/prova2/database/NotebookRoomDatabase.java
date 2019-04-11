@@ -23,6 +23,7 @@ public abstract class NotebookRoomDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             NotebookRoomDatabase.class, "notebook_database")
                             .addCallback(sRoomDatabaseCallback)
+                            .allowMainThreadQueries()
                             .build();
                 }
             }
