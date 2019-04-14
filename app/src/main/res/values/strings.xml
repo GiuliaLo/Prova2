@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Prova2</string>
+    <string name="app_name">Smart Notebook</string>
     <string name="action_settings">Settings</string>
     <string name="tab1">Camera</string>
     <string name="tab2">Notebooks</string>
@@ -15,4 +15,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="upload_file">Upload file</string>
+    <string name="rename_notebook">Rename notebook</string>
+    <string name="delete_notebook">Delete notebook</string>
+    <string name="text_upload_file">Upload new file</string>
+    <string name="last_number">Last number used: </string>
 </resources>

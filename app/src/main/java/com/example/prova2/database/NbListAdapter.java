@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.prova2.HomeFragment;
@@ -23,9 +25,10 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
 
     class NbViewHolder extends RecyclerView.ViewHolder {
         private final TextView nbItemView;
-        private final Button mDeleteNotebook;
-        private final Button mUpdateNotebook;
-        private final Button mInsertFile;
+        private final ImageButton mDeleteNotebook;
+        private final ImageButton mUpdateNotebook;
+        private final ImageButton mInsertFile;
+        //private final TextView mLastNumber;
 
         private NbViewHolder(View itemView) {
             super(itemView);
@@ -33,6 +36,7 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
             mDeleteNotebook = itemView.findViewById(R.id.btn_delete);
             mUpdateNotebook = itemView.findViewById(R.id.btn_update);
             mInsertFile = itemView.findViewById(R.id.btn_insert);
+            //mLastNumber = itemView.findViewById(R.id.textViewNumber);
         }
     }
 
@@ -40,10 +44,17 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
     private List<Notebook> mNotebooks; // Cached copy of words
     private NotebooksViewModel mModel;
     private Context mContext;
+    private String lastId;
 
     public NbListAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
+    }
+
+    public NbListAdapter(Context context, String id) {
+        mContext = context;
+        mInflater = LayoutInflater.from(context);
+        lastId = id;
     }
 
     @Override
@@ -58,6 +69,7 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
             Notebook current = mNotebooks.get(position);
             //TODO add last file number
             holder.nbItemView.setText(current.getNbName());
+            //holder.mLastNumber.setText(lastId);
         } else {
             // Covers the case of data not being ready yet.
             holder.nbItemView.setText("No Notebooks");

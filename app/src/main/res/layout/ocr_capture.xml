@@ -15,7 +15,8 @@
         <com.example.prova2.GraphicOverlay
             android:id="@+id/graphicOverlay"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="visible" />
 
     </com.example.prova2.CameraSourcePreview>
 

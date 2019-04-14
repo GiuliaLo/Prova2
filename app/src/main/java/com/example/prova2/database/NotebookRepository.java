@@ -37,7 +37,7 @@ public class NotebookRepository {
         return mContentDao.getFile(num); //?
     }
 
-    LiveData<Integer> getLastFileNumber(int nb) {
+    int getLastFileNumber(int nb) {
         return mContentDao.getLastFileNumber(nb);
     }
 

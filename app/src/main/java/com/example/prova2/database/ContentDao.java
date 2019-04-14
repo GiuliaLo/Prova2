@@ -16,7 +16,7 @@ public interface ContentDao {
     void deleteFile(int num);
 
     @Query("SELECT MAX(file_number) FROM content_table WHERE notebook = :nb")
-    LiveData<Integer> getLastFileNumber(int nb);
+    int getLastFileNumber(int nb);
 
     @Query("SELECT * FROM content_table WHERE file_number = :num")
     NotebookContent getFile(long num);

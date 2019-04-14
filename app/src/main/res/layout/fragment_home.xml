@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:tag="HomeFragment"
@@ -11,15 +12,8 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/darker_gray"
+        android:background="@android:color/background_light"
         tools:listitem="@layout/recyclerview_item" />
-
-    <TextView
-        android:id="@+id/ocr_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="" />
 
     <!--<LinearLayout
         android:id="@+id/layout_button"

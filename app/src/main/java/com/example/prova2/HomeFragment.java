@@ -239,13 +239,6 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    public void setOcrText(String text) {
-
-        mOCR = getView().findViewById(R.id.ocr_text);
-
-        mOCR.setText(text);
-
-    }
 
     public void addAProject (String name) {
         // insert new project into db
@@ -297,8 +290,6 @@ public class HomeFragment extends Fragment {
 
                                     Log.d(TAG, "Insert " + downloadUrl.toString() + " in notebook " + nb_id
                                             + " with number " + id);
-                                    Toast.makeText(getActivity(), "Inserted " + downloadUrl.getPath() + " in notebook " + nb_id
-                                            + " with number " + id, Toast.LENGTH_SHORT).show();
 
 
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -306,10 +297,16 @@ public class HomeFragment extends Fragment {
                                     View viewInflated = LayoutInflater.from(getActivity()).inflate(R.layout.number_dialog,
                                             (ViewGroup) getView(), false);
                                     final TextView input = viewInflated.findViewById(R.id.textView);
-                                    if (id < 10)
-                                        input.setText("0"+id);
-                                    else
+                                    //final TextView mLastNumber = getView().findViewById(R.id.textViewNumber);
+                                    NbListAdapter adapter;
+                                    if (id < 10) {
+                                        input.setText("0" + id);
+                                        //adapter = new NbListAdapter(getContext(), "0" + id);
+                                    }
+                                    else {
                                         input.setText("" + id);
+                                        //adapter = new NbListAdapter(getContext(), "" + id);
+                                    }
                                     builder.setView(viewInflated);
                                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override

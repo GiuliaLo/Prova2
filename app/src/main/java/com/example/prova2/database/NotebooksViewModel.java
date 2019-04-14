@@ -35,7 +35,7 @@ public class NotebooksViewModel extends AndroidViewModel {
         return mRepository.getFile(num);
     }
 
-    public LiveData<Integer> getLastFileNumber(int nb) {
+    public int getLastFileNumber(int nb) {
         return mRepository.getLastFileNumber(nb);
     }
 

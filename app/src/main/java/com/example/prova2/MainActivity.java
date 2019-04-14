@@ -1,46 +1,40 @@
 package com.example.prova2;
 
 import android.app.AlertDialog;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.example.prova2.database.NbListAdapter;
-import com.example.prova2.database.Notebook;
 import com.example.prova2.database.NotebookContent;
 import com.example.prova2.database.NotebooksViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
@@ -62,12 +56,13 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
     private ViewPager mViewPager;
     private Toolbar mToolbar;
     private TabLayout mTab;
+    private FrameLayout mHomeLayout;
 
 
     //Google cloud storage bucket
     private final String BUCKET_NAME = "gs://prova2-234918.appspot.com/";
 
-    //private NotebooksViewModel mNotebooksViewModel;
+    private NotebooksViewModel mNotebooksViewModel;
 //    private FloatingActionButton fab;
 
     @Override
@@ -82,8 +77,6 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mTab = findViewById(R.id.tab);
-
-        //   fab = (FloatingActionButton) findViewById(R.id.fab);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -192,53 +185,71 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
 
         NotebookContent nc = viewModel.getFile(parseInt(parameter));
 
-        String fp = nc.getFilePath();
+        try {
+            String fp = nc.getFilePath();
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference gsReference = storage.getReferenceFromUrl(fp);
+            Intent intent = new Intent(this, ImageDisplay.class);
+            intent.putExtra("path", fp);
+            startActivity(intent);
 
-        final long FOUR_MEGABYTES = 1024 * 1024 * 4;
-        gsReference.getBytes(FOUR_MEGABYTES).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
+            /*
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference gsReference = storage.getReferenceFromUrl(fp);
+
+            final long FOUR_MEGABYTES = 1024 * 1024 * 4;
+            gsReference.getBytes(FOUR_MEGABYTES).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+
+                    /*
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getSupportFragmentManager().getFragments().get(0).getContext());
+                    builder.setTitle("Your file!");
+                    View viewInflated = LayoutInflater.from(getApplicationContext()).inflate(R.layout.image_dialog,
+                            (ViewGroup) getSupportFragmentManager().getFragments().get(0).getView(), false);
+
+        */
+/*
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    //final ImageView image = viewInflated.findViewById(R.id.imgView);
+                    final ImageView image = (ImageView) findViewById(R.id.picture);
+                    image.setImageBitmap(bitmap);
+
+                    /*
+                    mTab.setVisibility(View.GONE);
+                    mToolbar.setVisibility(View.GONE);
+                    mHomeLayout = (FrameLayout) findViewById(R.id.home);
+                    mHomeLayout.setVisibility(View.GONE);
+*/
+                    //builder.setView(viewInflated);
+    /*
+                    builder.setNegativeButton("CLOSE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    builder.show();
+    */
 
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getSupportFragmentManager().getFragments().get(0).getContext());
-                builder.setTitle("Your file!");
-                View viewInflated = LayoutInflater.from(getApplicationContext()).inflate(R.layout.image_dialog,
-                        (ViewGroup) getSupportFragmentManager().getFragments().get(0).getView(), false);
-
-
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                final ImageView image = viewInflated.findViewById(R.id.imgView);
-                image.setImageBitmap(bitmap);
-                builder.setView(viewInflated);
-
-                builder.setNegativeButton("CLOSE", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-
-
-
-//                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//                ImageView imageView = (ImageView) findViewById(R.id.imgView);
-//                imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, imageView.getWidth(),
-//                        imageView.getHeight(), false));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
-        // set text in HomeFragment
-        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().getFragments().get(0);
-        homeFragment.setOcrText(parameter);
+    //                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    //                ImageView imageView = (ImageView) findViewById(R.id.imgView);
+    //                imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, imageView.getWidth(),
+    //                        imageView.getHeight(), false));
+            /*
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+            */
+        } catch (Exception e) {
+            Snackbar.make(findViewById(R.id.main_content),"No file linked to that number", Snackbar.LENGTH_LONG)
+                    .show();
+        }
 
     }
 
@@ -328,9 +339,17 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
             if (position == 0)
                 return "Notebooks";
                 //return findViewById(R.id.tab1);
-            else
-                return "Camera";
+            else {
+                Drawable image = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_photo_camera_black_24dp);
+                image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+                SpannableString sb = new SpannableString(" ");
+                ImageSpan imageSpan = new ImageSpan(image);
+                sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                return sb;
+            }
+                //return "Camera";
             //return findViewById(R.id.tab2);
         }
+
     }
 }

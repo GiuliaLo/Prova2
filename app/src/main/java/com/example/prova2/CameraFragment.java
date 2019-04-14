@@ -133,8 +133,7 @@ public class CameraFragment extends Fragment {
         gestureDetector = new GestureDetector(getContext(), new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
 
-        Snackbar.make(mGraphicOverlay, "Tap to capture. Pinch/Stretch to zoom",
-                Snackbar.LENGTH_LONG)
+        Snackbar.make(mGraphicOverlay, "Tap text preview to capture.\nPinch/Stretch to zoom.", Snackbar.LENGTH_INDEFINITE)
                 .show();
 
         return view;
