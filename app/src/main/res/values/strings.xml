@@ -11,6 +11,7 @@
     <string name="button">CAPTURE TEXT</string>
     <string name="low_storage_error">Ocr dependencies cannot be downloaded due to low device storage</string>
     <string name="ok">OK</string>
+    <string name="yes">YES</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -20,4 +21,6 @@
     <string name="delete_notebook">Delete notebook</string>
     <string name="text_upload_file">Upload new file</string>
     <string name="last_number">Last number used: </string>
+    <string name="get_started">GETTING STARTED </string>
+
 </resources>

@@ -78,7 +78,27 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
         holder.mDeleteNotebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mModel.deleteNotebook(mNotebooks.get(position));
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("DELETE NOTEBOOK");
+                builder.setMessage("Do you really want to delete the notebook?\nYou will lose all of the files connected to it.");
+                View viewInflated = LayoutInflater.from(mContext).inflate(R.layout.empty_dialog,
+                        (ViewGroup) v.getParent(), false);
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        mModel.deleteNotebook(mNotebooks.get(position));
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+
             }
         });
 

@@ -52,6 +52,10 @@ dependencies {
     // Lifecycle components
     implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
+
+
+    implementation 'com.github.navasmdc:MaterialDesign:1.5@aar'
+    implementation 'com.ogaclejapan.smarttablayout:library:1.2.1@aar'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -1,13 +1,9 @@
 package com.example.prova2;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -21,20 +17,13 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.example.prova2.database.NotebookContent;
 import com.example.prova2.database.NotebooksViewModel;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.example.prova2.onboarding.OnboardingActivity;
 
 import static java.lang.Integer.parseInt;
 
@@ -56,18 +45,23 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
     private ViewPager mViewPager;
     private Toolbar mToolbar;
     private TabLayout mTab;
-    private FrameLayout mHomeLayout;
-
-
-    //Google cloud storage bucket
-    private final String BUCKET_NAME = "gs://prova2-234918.appspot.com/";
-
-    private NotebooksViewModel mNotebooksViewModel;
-//    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences preferences =
+                getSharedPreferences("my_preferences", MODE_PRIVATE);
+
+        if(!preferences.getBoolean("onboarding_complete",false)){
+
+            Intent onboarding = new Intent(this, OnboardingActivity.class);
+            startActivity(onboarding);
+
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
 
         mToolbar = findViewById(R.id.toolbar);
@@ -147,7 +141,11 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_help) {
+            Intent onboarding = new Intent(this, OnboardingActivity.class);
+            startActivity(onboarding);
+
+            finish();
             return true;
         }
 
@@ -191,61 +189,6 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
             Intent intent = new Intent(this, ImageDisplay.class);
             intent.putExtra("path", fp);
             startActivity(intent);
-
-            /*
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference gsReference = storage.getReferenceFromUrl(fp);
-
-            final long FOUR_MEGABYTES = 1024 * 1024 * 4;
-            gsReference.getBytes(FOUR_MEGABYTES).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-
-                    /*
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getSupportFragmentManager().getFragments().get(0).getContext());
-                    builder.setTitle("Your file!");
-                    View viewInflated = LayoutInflater.from(getApplicationContext()).inflate(R.layout.image_dialog,
-                            (ViewGroup) getSupportFragmentManager().getFragments().get(0).getView(), false);
-
-        */
-/*
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    //final ImageView image = viewInflated.findViewById(R.id.imgView);
-                    final ImageView image = (ImageView) findViewById(R.id.picture);
-                    image.setImageBitmap(bitmap);
-
-                    /*
-                    mTab.setVisibility(View.GONE);
-                    mToolbar.setVisibility(View.GONE);
-                    mHomeLayout = (FrameLayout) findViewById(R.id.home);
-                    mHomeLayout.setVisibility(View.GONE);
-*/
-                    //builder.setView(viewInflated);
-    /*
-                    builder.setNegativeButton("CLOSE", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-
-                    builder.show();
-    */
-
-
-    //                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-    //                ImageView imageView = (ImageView) findViewById(R.id.imgView);
-    //                imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, imageView.getWidth(),
-    //                        imageView.getHeight(), false));
-            /*
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
-            */
         } catch (Exception e) {
             Snackbar.make(findViewById(R.id.main_content),"No file linked to that number", Snackbar.LENGTH_LONG)
                     .show();
@@ -256,52 +199,6 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
     /**
      * A placeholder fragment containing a simple view.
      */
-
-    //public static class PlaceholderFragment extends Fragment {
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-/*
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-/*
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-
-        /*
-            switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
-                case 1:
-                    View cameraView = inflater.inflate(R.layout.fragment_camera, container, false);
-                    return cameraView;
-                case 2:
-                    View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-                    return rootView;
-            }
-            return inflater.inflate(R.layout.fragment_home, container, false);
-        }
-    }*/
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
