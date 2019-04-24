@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/slide_image"
-        android:layout_width="363dp"
-        android:layout_height="568dp"
+        android:layout_width="410dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="16dp"
         app:srcCompat="@drawable/page5" />
 

@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
         // get directly a Content (for testing)
         //NotebookContent nc = viewModel.getFile(13);
 
-        NotebookContent nc = viewModel.getFile(parseInt(parameter));
+        NotebookContent nc = viewModel.getFile(parseInt(parameter.replaceAll("[\\D]", "")));
 
         try {
             String fp = nc.getFilePath();

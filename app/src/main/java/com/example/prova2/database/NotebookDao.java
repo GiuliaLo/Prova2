@@ -18,7 +18,7 @@ public interface NotebookDao {
     @Delete
     void deleteNotebook(Notebook nb);
 
-    @Query("UPDATE notebooks_table SET name = :newName WHERE name = :oldName")  //onconflict??
+    @Query("UPDATE notebooks_table SET name = :newName WHERE name = :oldName")
     void updateNotebook(String oldName, String newName);
 
     @Query("SELECT * FROM notebooks_table ORDER BY name ASC")
