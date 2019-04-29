@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.prova2.R;
 
+//class for page4 of the walkthrough
 public class OnboardingFragment4 extends Fragment {
 
     @Nullable

@@ -29,19 +29,7 @@ import static java.lang.Integer.parseInt;
 
 public class MainActivity extends AppCompatActivity implements CameraFragment.OnFragmentInteractionListener {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
     private Toolbar mToolbar;
     private TabLayout mTab;
@@ -50,10 +38,11 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Shows walkthrough only the first time the app is opened
         SharedPreferences preferences =
                 getSharedPreferences("my_preferences", MODE_PRIVATE);
 
-        if(!preferences.getBoolean("onboarding_complete",false)){
+        if (!preferences.getBoolean("onboarding_complete", false)) {
 
             Intent onboarding = new Intent(this, OnboardingActivity.class);
             startActivity(onboarding);
@@ -104,25 +93,6 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
             }
         });
 
-
-
-        //      onFragmentInteraction("2");
-        /*
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        final NbListAdapter adapter = new NbListAdapter(this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mNotebooksViewModel = ViewModelProviders.of(this).get(NotebooksViewModel.class);
-
-        mNotebooksViewModel.getAllNotebooks().observe(this, new Observer<List<Notebook>>() {
-            @Override
-            public void onChanged(@Nullable final List<Notebook> notebooks) {
-                // Update the cached copy of the words in the adapter.
-                adapter.setNotebooks(notebooks);
-            }
-        });
-        */
     }
 
 
@@ -175,30 +145,24 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
 
 
         NotebooksViewModel viewModel = new NotebooksViewModel(getApplication());
-        //NotebooksViewModel viewModel = ViewModelProviders.of(this).get(NotebooksViewModel.class);
-        //viewModel.getFile(parseInt(parameter.replaceAll("[\\D]", ""))).observe(this,);
-
-        // get directly a Content (for testing)
-        //NotebookContent nc = viewModel.getFile(13);
-
-        NotebookContent nc = viewModel.getFile(parseInt(parameter.replaceAll("[\\D]", "")));
 
         try {
+            //Read just the number
+            NotebookContent nc = viewModel.getFile(parseInt(parameter.replaceAll("[\\D]", "")));
             String fp = nc.getFilePath();
 
             Intent intent = new Intent(this, ImageDisplay.class);
             intent.putExtra("path", fp);
             startActivity(intent);
+        } catch (NumberFormatException e) {
+            Snackbar.make(findViewById(R.id.main_content),"Not a number", Snackbar.LENGTH_LONG)
+                    .show();
         } catch (Exception e) {
-            Snackbar.make(findViewById(R.id.main_content),"No file linked to that number", Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(R.id.main_content),"No files linked to that number", Snackbar.LENGTH_LONG)
                     .show();
         }
 
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -220,8 +184,6 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
                 return HomeFragment.newInstance(position+1);
             else
                 return CameraFragment.newInstance(position+1);
-
-            //return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
@@ -235,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
         public CharSequence getPageTitle(int position) {
             if (position == 0)
                 return "Notebooks";
-                //return findViewById(R.id.tab1);
             else {
                 Drawable image = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_photo_camera_black_24dp);
                 image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
@@ -244,8 +205,6 @@ public class MainActivity extends AppCompatActivity implements CameraFragment.On
                 sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 return sb;
             }
-                //return "Camera";
-            //return findViewById(R.id.tab2);
         }
 
     }

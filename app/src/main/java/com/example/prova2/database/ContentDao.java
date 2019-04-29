@@ -1,29 +1,31 @@
 package com.example.prova2.database;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+/*
+Data access object for communication with the Database (Notebook content table content_table)
+Maps method calls to db queries
+The methods are implemented in NotebookRepository
+ */
 @Dao
 public interface ContentDao {
     @Insert
     long insertFile(NotebookContent nc);
 
-    @Query("DELETE FROM content_table WHERE file_number = :num")
-    void deleteFile(int num);
-
-    @Query("SELECT MAX(file_number) FROM content_table WHERE notebook = :nb")
-    int getLastFileNumber(int nb);
+    @Delete
+    void deleteFile(NotebookContent nc);
 
     @Query("SELECT * FROM content_table WHERE file_number = :num")
     NotebookContent getFile(long num);
 
     @Query("SELECT * FROM content_table WHERE notebook = :nb ORDER BY file_number ASC")
-    LiveData<List<NotebookContent>> getAllFiles(int nb);
+    List<NotebookContent> getAllFiles(int nb);
 
     @Query("SELECT * FROM content_table ORDER BY notebook, file_number ASC")
-    LiveData<List<NotebookContent>> getAllFiles();
+    List<NotebookContent> getAllFiles();
 }

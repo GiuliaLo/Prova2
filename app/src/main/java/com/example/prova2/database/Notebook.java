@@ -2,10 +2,12 @@ package com.example.prova2.database;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+/*
+Defines Notebook table and class methods for notebooks
+ */
 @Entity(tableName = "notebooks_table"
         //, indices = {@Index(value = "name", unique = true)}
         )
@@ -29,4 +31,9 @@ public class Notebook {
     public String getNbName() {return this.nbName;}
 
     public void setNbName(String nbName) {this.nbName = nbName;}
+
+    @Override
+    public String toString() {
+        return this.id+", "+this.nbName;
+    }
 }

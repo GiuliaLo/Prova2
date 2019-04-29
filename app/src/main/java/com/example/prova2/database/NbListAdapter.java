@@ -3,15 +3,11 @@ package com.example.prova2.database;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -21,6 +17,9 @@ import com.example.prova2.R;
 
 import java.util.List;
 
+/*
+Class that manages single recyclerview_item elements, that is single notebooks and their actions
+ */
 public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHolder> {
 
     class NbViewHolder extends RecyclerView.ViewHolder {
@@ -41,7 +40,7 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
     }
 
     private final LayoutInflater mInflater;
-    private List<Notebook> mNotebooks; // Cached copy of words
+    private List<Notebook> mNotebooks; // Cached copy of notebooks
     private NotebooksViewModel mModel;
     private Context mContext;
     private String lastId;
@@ -51,6 +50,7 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
         mInflater = LayoutInflater.from(context);
     }
 
+    //Constructor with last file number (not used)
     public NbListAdapter(Context context, String id) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
@@ -63,11 +63,11 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
         return new NbViewHolder(itemView);
     }
 
+    //Loads notebook name of current notebook and manages onClick actions on update and delete notebook and upload file
     @Override
     public void onBindViewHolder(NbViewHolder holder, final int position) {
         if (mNotebooks != null) {
             Notebook current = mNotebooks.get(position);
-            //TODO add last file number
             holder.nbItemView.setText(current.getNbName());
             //holder.mLastNumber.setText(lastId);
         } else {
@@ -117,7 +117,7 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
 
-                        mModel.updateNotebook(mNotebooks.get(position).getNbName(), input.getText().toString() );
+                        mModel.updateNotebook(mNotebooks.get(position).getId(), input.getText().toString() );
                     }
                 });
                 builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -149,15 +149,9 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
 
-
                         ((HomeFragment)((FragmentActivity)mContext).getSupportFragmentManager().
                                 getFragments().get(0)).chooseImage(mNotebooks.get(position).getId());
 
-
-//                        NotebookContent nc = new NotebookContent((mNotebooks.get(position).getId()),
-//                                input.getText().toString());
-//
-//                        mModel.insertFile(nc);
                     }
                 });
                 builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -175,14 +169,14 @@ public class NbListAdapter extends RecyclerView.Adapter<NbListAdapter.NbViewHold
 
     }
 
+    //called by HomeFragment to get complete list of notebooks
     public void setNotebooks(List<Notebook> notebooks, NotebooksViewModel model){
         mNotebooks = notebooks;
         mModel = model;
         notifyDataSetChanged();
     }
 
-    // getItemCount() is called many times, and when it is first called,
-    // mWords has not been updated (means initially, it's null, and we can't return null).
+    //returns number of notebooks
     @Override
     public int getItemCount() {
         if (mNotebooks != null)

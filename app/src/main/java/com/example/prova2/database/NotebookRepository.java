@@ -3,15 +3,29 @@ package com.example.prova2.database;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static android.support.constraint.Constraints.TAG;
+
+/*
+Implementation of database query methods defined in DAOs.
+Use an AsyncTask to perform db queries on a non-UI thread, or the app will crash.
+Room ensures that you don't do any long-running operations on the main thread, which would block the UI.
+ */
 public class NotebookRepository {
     private NotebookDao mNotebookDao;
     private ContentDao mContentDao;
     private LiveData<List<Notebook>> mAllNotebooks;
-    private LiveData<List<NotebookContent>> mAllContents;
+    private List<NotebookContent> mAllContents;
 
     NotebookRepository(Application application) {
         NotebookRoomDatabase db = NotebookRoomDatabase.getDatabase(application);
@@ -25,11 +39,13 @@ public class NotebookRepository {
         return mAllNotebooks;
     }
 
-    LiveData<List<NotebookContent>> getAllFiles() {
+    LiveData<Notebook> getNotebook(int id) { return mNotebookDao.getNotebook(id); }
+
+    List<NotebookContent> getAllFiles() {
         return mAllContents;
     }
 
-    LiveData<List<NotebookContent>> getAllFiles(int nb) {
+    List<NotebookContent> getAllFiles(int nb) {
         return mContentDao.getAllFiles(nb); //?
     }
 
@@ -37,18 +53,22 @@ public class NotebookRepository {
         return mContentDao.getFile(num); //?
     }
 
-    int getLastFileNumber(int nb) {
-        return mContentDao.getLastFileNumber(nb);
-    }
-
 
     //INSERT NOTEBOOK
 
-    public void insertNotebook (Notebook nb) {
-        new insertNotebookAsyncTask(mNotebookDao).execute(nb);
+    public int insertNotebook (Notebook nb) {
+        int id = 0;
+        try {
+            id = new insertNotebookAsyncTask(mNotebookDao).execute(nb).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return id;
     }
 
-    private static class insertNotebookAsyncTask extends AsyncTask<Notebook, Void, Void> {
+    private static class insertNotebookAsyncTask extends AsyncTask<Notebook, Void, Integer> {
 
         private NotebookDao mAsyncTaskDao;
 
@@ -57,9 +77,14 @@ public class NotebookRepository {
         }
 
         @Override
-        protected Void doInBackground(final Notebook... params) {
-            mAsyncTaskDao.insertNotebook(params[0]);
-            return null;
+        protected Integer doInBackground(final Notebook... params) {
+            int id = (int)mAsyncTaskDao.insertNotebook(params[0]);
+            return id;
+        }
+
+        @Override
+        protected void onPostExecute(Integer id) {
+            super.onPostExecute(id);
         }
     }
 
@@ -95,6 +120,11 @@ public class NotebookRepository {
     //DELETE NOTEBOOK
 
     public void deleteNotebook (Notebook nb) {
+        //delete all files
+        List<NotebookContent> files = getAllFiles(nb.getId());
+        for (NotebookContent f : files) {
+            deleteFile(f);
+        }
         new deleteNotebookAsyncTask(mNotebookDao).execute(nb);
     }
 
@@ -115,12 +145,29 @@ public class NotebookRepository {
 
 
     //DELETE FILE
+    public void deleteFile (NotebookContent nc) {
+        //remove file from storage before deleting reference
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference fileRef = storage.getReferenceFromUrl(nc.getFilePath());
 
-    public void deleteFile (int num) {
-        new deleteContentAsyncTask(mContentDao).execute(num);
+        fileRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // File deleted successfully
+                Log.d(TAG, "onSuccess: deleted file");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Uh-oh, an error occurred!
+                Log.d(TAG, "onFailure: did not delete file");
+            }
+        });
+
+        new deleteContentAsyncTask(mContentDao).execute(nc);
     }
 
-    private static class deleteContentAsyncTask extends AsyncTask<Integer, Void, Void> {
+    private static class deleteContentAsyncTask extends AsyncTask<NotebookContent, Void, Void> {
         private ContentDao mAsyncTaskDao;
 
         deleteContentAsyncTask(ContentDao dao) {
@@ -128,25 +175,17 @@ public class NotebookRepository {
         }
 
         @Override
-        protected Void doInBackground(final Integer... params) {
+        protected Void doInBackground(final NotebookContent... params) {
             //mAsyncTaskDao.deleteFile(params[0].nbId, params[0].fileNum);
             mAsyncTaskDao.deleteFile(params[0]);
             return null;
         }
     }
 
-    private static class MyParamsDeleteFile {
-        int nbId;
-        int fileNum;
-
-        MyParamsDeleteFile(String nbName, int fileNum) {this.nbId = nbId; this.fileNum = fileNum;}
-    }
-
-
     //UPDATE NOTEBOOK
 
-    public void updateNotebook (final String oldName, final String newName) {
-        new updateNotebookAsyncTask(mNotebookDao).execute(new MyParamsUpdateNotebook(oldName, newName));
+    public void updateNotebook (final int id, final String newName) {
+        new updateNotebookAsyncTask(mNotebookDao).execute(new MyParamsUpdateNotebook(id, newName));
     }
 
     private static class updateNotebookAsyncTask extends AsyncTask<MyParamsUpdateNotebook, Void, Void> {
@@ -158,16 +197,17 @@ public class NotebookRepository {
 
         @Override
         protected Void doInBackground(final MyParamsUpdateNotebook... params) {
-            mAsyncTaskDao.updateNotebook(params[0].oldName, params[0].newName);
+            mAsyncTaskDao.updateNotebook(params[0].id, params[0].newName);
             return null;
         }
     }
 
+    //helper class for use as AsyncTask parameters
     private static class MyParamsUpdateNotebook {
-        String oldName;
+        int id;
         String newName;
 
-        MyParamsUpdateNotebook(String oldName, String newName) {this.oldName = oldName; this.newName = newName;}
+        MyParamsUpdateNotebook(int id, String newName) {this.id = id; this.newName = newName;}
     }
 
 }

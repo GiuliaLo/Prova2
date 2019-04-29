@@ -5,9 +5,11 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+/*
+Database layer on top of SQLite database
+ */
 @Database(entities = {Notebook.class, NotebookContent.class}, version = 1)
 public abstract class NotebookRoomDatabase extends RoomDatabase {
     public abstract NotebookDao notebookDao();

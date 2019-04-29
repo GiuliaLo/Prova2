@@ -14,6 +14,9 @@ import com.example.prova2.R;
 import com.gc.materialdesign.views.ButtonFlat;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
+/*
+Class that sets up the walkthrough and manages the different pages
+ */
 public class OnboardingActivity extends AppCompatActivity {
     private ViewPager pager;
     private SmartTabLayout indicator;
@@ -94,10 +97,13 @@ public class OnboardingActivity extends AppCompatActivity {
         });
     }
 
+    //returns control to MainActivity
     private void finishOnboarding() {
         SharedPreferences preferences =
                 getSharedPreferences("my_preferences", MODE_PRIVATE);
 
+        //preference checked by MainActivity to decide if the walktrough has already been shown
+        // so that it's displayed only once
         preferences.edit()
                 .putBoolean("onboarding_complete",true).apply();
 

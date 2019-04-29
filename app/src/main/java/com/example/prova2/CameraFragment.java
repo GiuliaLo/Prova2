@@ -31,6 +31,11 @@ import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
 
+/*
+Fragment of the PagerAdapter that manages user interaction with the camera, like gestures and the onTap action,
+that returns the text shown with GraphicOverlay tapped by the user
+ */
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -66,22 +71,10 @@ public class CameraFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * param param1 Parameter 1.
-     * param param2 Parameter 2.
-     * @return A new instance of fragment CameraFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    //public static CameraFragment newInstance(String param1, String param2) {
     public static CameraFragment newInstance(int sectionNumber) {
         CameraFragment fragment = new CameraFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_SECTION_NUMBER, sectionNumber); //for PagerAdapter in MainActivity
         fragment.setArguments(args);
         return fragment;
     }
@@ -106,10 +99,9 @@ public class CameraFragment extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
 
                 boolean b = scaleGestureDetector.onTouchEvent(event);
-//
+
                 boolean c = gestureDetector.onTouchEvent(event);
-//
-//        return b || c || super.onTouchEvent(e);
+
                 return b || c;
             }
         });
@@ -121,8 +113,8 @@ public class CameraFragment extends Fragment {
         boolean autoFocus = true;
         boolean useFlash = false;
 
-        // Check for the camera permission before accessing the camera.  If the
-        // permission is not granted yet, request permission.
+        /* Check for the camera permission before accessing the camera.
+        If the permission is not granted yet, request permission. */
         int rc = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
             createCameraSource(autoFocus, useFlash);
@@ -140,9 +132,7 @@ public class CameraFragment extends Fragment {
     }
 
     /**
-     * Handles the requesting of the camera permission.  This includes
-     * showing a "Snackbar" message of why the permission is needed then
-     * sending the request.
+     * Handles the request of the camera permission.
      */
     private void requestCameraPermission() {
         Log.w(TAG, "Camera permission is not granted. Requesting permission");
@@ -172,21 +162,21 @@ public class CameraFragment extends Fragment {
                 .show();
         */
     }
+/*
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent e) {
-//        boolean b = scaleGestureDetector.onTouchEvent(e);
-//
-//        boolean c = gestureDetector.onTouchEvent(e);
-//
-//        return b || c || super.onTouchEvent(e);
-//    }
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        boolean b = scaleGestureDetector.onTouchEvent(e);
+
+        boolean c = gestureDetector.onTouchEvent(e);
+
+        return b || c || super.onTouchEvent(e);
+    }
+*/
 
 
     /**
-     * Creates and starts the camera.  Note that this uses a higher resolution in comparison
-     * to other detection examples to enable the ocr detector to detect small text samples
-     * at long distances.
+     * Creates and starts the camera.
      *
      * Suppressing InlinedApi since there is a check that the minimum version is met before using
      * the constant.
@@ -224,8 +214,8 @@ public class CameraFragment extends Fragment {
 //            }
         }
 
-        // Creates and starts the camera.  Note that this uses a higher resolution in comparison
-        // to other detection examples to enable the text recognizer to detect small pieces of text.
+        // Creates and starts the camera.  This uses a high resolution
+        // to enable the text recognizer to detect small pieces of text.
         mCameraSource =
                 new CameraSource.Builder(getContext(), textRecognizer)
                         .setFacing(CameraSource.CAMERA_FACING_BACK)
@@ -384,6 +374,7 @@ public class CameraFragment extends Fragment {
         }
     }
 
+    //not used
     private class ScaleListener implements ScaleGestureDetector.OnScaleGestureListener {
 
         /**

@@ -1,10 +1,8 @@
 package com.example.prova2;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,16 +16,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,7 +32,6 @@ import android.widget.Toast;
 import com.example.prova2.database.NbListAdapter;
 import com.example.prova2.database.Notebook;
 import com.example.prova2.database.NotebookContent;
-import com.example.prova2.database.NotebookRoomDatabase;
 import com.example.prova2.database.NotebooksViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -46,13 +40,16 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
 
+
+/*
+Fragment containing the home view of the PagerAdapter with the notebook list, updated using NbListAdapter
+ */
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,24 +61,10 @@ import static android.content.ContentValues.TAG;
  */
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    /*
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    // TODO: Rename and change types of parameters
-    /*
-    private String mParam1;
-    private String mParam2;
-    */
     private String sectionNumber;
     private View view;
-
-
-    //private ViewGroup mContainer;
 
     private TextView mOCR;
 
@@ -110,18 +93,13 @@ public class HomeFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * param param1 Parameter 1.
-     * param param2 Parameter 2.
+     * @param sectionNumber
      * @return A new instance of fragment HomeFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    //public static HomeFragment newInstance(String param1, String param2) {
     public static HomeFragment newInstance(int sectionNumber) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -130,11 +108,6 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            /*
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-            */
-
             FragmentManager mng = getFragmentManager();
             mng.addOnBackStackChangedListener(
                     new FragmentManager.OnBackStackChangedListener() {
@@ -146,14 +119,21 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /*
+     defines what the fragment displays and the onClick actions on the elements of the UI
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //mContainer = container;
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        //connect with the database
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
+
+        //get list items from NbListAdapter and inflate the layout
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
         final NbListAdapter adapter = new NbListAdapter(getActivity());
         recyclerView.setAdapter(adapter);
@@ -172,6 +152,8 @@ public class HomeFragment extends Fragment {
         });
 
 
+        //Defines action for floating action button + to add new notebook
+        //open dialog to prompt insertion of notebook name
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,49 +179,18 @@ public class HomeFragment extends Fragment {
                 });
 
                 builder.show();
-                /*
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                Fragment addNotebook = AddNotebook.newInstance();
-                transaction.replace(R.id.container,addNotebook); // give your fragment container id in first parameter
-                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
-                transaction.commit();
-                */
-                /*
-                Snackbar.make(view, "Replace with add notebook action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                        */
+
             }
         });
-
-//        btnChoose = (Button) view.findViewById(R.id.btnChoose);
-//        btnUpload = (Button) view.findViewById(R.id.btnUpload);
-//        imageView = (ImageView) view.findViewById(R.id.imgView);
-
-//        btnChoose.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                chooseImage(-1);
-//            }
-//        });
-//
-//        btnUpload.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                uploadImage();
-//            }
-//        });
-
-
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
-
-
 
         return view;
     }
 
 
+    /**
+     * Calls insert query for a new notebook with name
+     * @param name The name of the notebook
+     */
     public void addAProject (String name) {
         // insert new project into db
         if (!name.isEmpty())
@@ -247,16 +198,15 @@ public class HomeFragment extends Fragment {
         else {
             Snackbar.make(view, "Title can't be empty", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
-
-        // show text.. only for test
-        /*
-        mOCR = getView().findViewById(R.id.ocr_text);
-        mOCR.setText(name);
-        */
     }
 
 
     private int mNb_id = -1;
+
+    /**
+     * Makes the user pick an image from device storage
+     * @param nb_id Id of the notebook that the file has to be linked to
+     */
     public void chooseImage(int nb_id) {
         mNb_id = nb_id;
         Intent intent = new Intent();
@@ -265,6 +215,10 @@ public class HomeFragment extends Fragment {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    /**
+     * Uploads the chosen to Firebase Storage
+     * @param nb_id Id of the notebook that the file has to be linked to
+     */
     private void uploadImage(final int nb_id) {
 
         if(filePath != null)
@@ -292,6 +246,7 @@ public class HomeFragment extends Fragment {
                                             + " with number " + id);
 
 
+                                    //Dialog that tells the user the id of the file they uploaded
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                     builder.setTitle("Write:");
                                     View viewInflated = LayoutInflater.from(getActivity()).inflate(R.layout.number_dialog,
@@ -344,6 +299,10 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /*
+    Receives the result of the activity launched in method chooseImage, so the image picked by the user
+    Creates dialog to ask for confirmation to upload to Firebase Storage
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -390,27 +349,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    /*
-        @Override
-        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-            FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    Fragment addNotebook = AddNotebook.newInstance();
-                    transaction.replace(mContainer.getId(),addNotebook); // give your fragment container id in first parameter
-                    transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
-                    transaction.commit();
-                    //
-                    //Snackbar.make(view, "Replace with add notebook action", Snackbar.LENGTH_LONG)
-                    //.setAction("Action", null).show();
-                }
-            });
-        }
-    */
-    // TODO: Rename method, update argument and hook method into UI event
+    // not used
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

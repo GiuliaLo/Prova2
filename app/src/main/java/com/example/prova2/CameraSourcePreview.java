@@ -30,6 +30,9 @@ import com.google.android.gms.vision.CameraSource;
 
 import java.io.IOException;
 
+/*
+Class that manages and processes frames received from the camera and shows a preview to the user
+ */
 public class CameraSourcePreview extends ViewGroup {
     private static final String TAG = "CameraSourcePreview";
 

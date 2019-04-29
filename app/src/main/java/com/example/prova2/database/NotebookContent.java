@@ -6,9 +6,11 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
+/*
+Defines notebook content table and class methods for contents
+ */
 @Entity(tableName = "content_table", foreignKeys = @ForeignKey(entity = Notebook.class, parentColumns = "id", childColumns = "notebook", onDelete = CASCADE, onUpdate = CASCADE))
 public class NotebookContent {
     @ColumnInfo(name = "notebook")
@@ -37,4 +39,8 @@ public class NotebookContent {
 
     public void setFilePath(String filePath) {this.filePath = filePath;}
 
+    @Override
+    public String toString() {
+        return this.notebook+", "+this.getNum()+", "+this.getFilePath();
+    }
 }
