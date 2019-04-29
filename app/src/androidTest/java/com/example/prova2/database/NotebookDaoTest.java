@@ -43,7 +43,7 @@ public class NotebookDaoTest {
     }
 
     @Test
-    public void testInsertNotebooks() throws InterruptedException {
+    public void testInsertNotebook() throws InterruptedException {
         ArrayList<Notebook> notebookList = new ArrayList<>();
         for (int i=0; i<5; i++) {
             notebookList.add(new Notebook("Notebook"+ i));
@@ -55,9 +55,7 @@ public class NotebookDaoTest {
             nb.setId(id[j]);
         }
 
-        for (int i=0; i<5; i++) {
-            assertEquals(notebookList.get(i).toString(), LiveDataTestUtil.getValue(mNotebook.getNotebook(id[i])).toString());
-        }
+        assertEquals(notebookList.get(4).toString(), LiveDataTestUtil.getValue(mNotebook.getNotebook(id[4])).toString());
     }
 
     @Test
@@ -70,10 +68,9 @@ public class NotebookDaoTest {
         int j = -1;
         for (Notebook nb : notebookList)
             id[++j] = (int)mNotebook.insertNotebook(nb);
-        for (int i=0; i<5; i++) {
-            mNotebook.deleteNotebook(LiveDataTestUtil.getValue(mNotebook.getNotebook(id[i])));
-            assertNull(LiveDataTestUtil.getValue(mNotebook.getNotebook(id[i])));
-        }
+
+        mNotebook.deleteNotebook(LiveDataTestUtil.getValue(mNotebook.getNotebook(id[3])));
+        assertNull(LiveDataTestUtil.getValue(mNotebook.getNotebook(id[3])));
     }
 
     @Test
@@ -87,10 +84,9 @@ public class NotebookDaoTest {
         for (Notebook nb : notebookList)
             id[++j] = (int)mNotebook.insertNotebook(nb);
 
-        for (int i=0; i<5; i++) {
-            mNotebook.updateNotebook(id[i], "N"+i);
-            assertEquals("N"+i, LiveDataTestUtil.getValue(mNotebook.getNotebook(id[i])).getNbName());
-        }
+
+        mNotebook.updateNotebook(id[2], "N"+2);
+        assertEquals("N"+2, LiveDataTestUtil.getValue(mNotebook.getNotebook(id[2])).getNbName());
     }
 
     @Test

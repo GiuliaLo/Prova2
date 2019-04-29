@@ -53,8 +53,7 @@ public class ContentDaoTest {
             nc.setNum(fileId[j]);
         }
 
-        for (int i=0; i<5; i++)
-            assertEquals(contentList.get(0).toString(), mContent.getFile(fileId[0]).toString());
+        assertEquals(contentList.get(0).toString(), mContent.getFile(fileId[0]).toString());
     }
 
     @Test
@@ -71,10 +70,8 @@ public class ContentDaoTest {
         for (NotebookContent nc : contentList)
             fileId[++j] = (int)mContent.insertFile(nc);
 
-        for (int i=0; i<5; i++) {
-            mContent.deleteFile(mContent.getFile(fileId[i]));
-            assertNull(mContent.getFile(fileId[i]));
-        }
+        mContent.deleteFile(mContent.getFile(fileId[2]));
+        assertNull(mContent.getFile(fileId[2]));
 
     }
 
