@@ -216,7 +216,7 @@ public class HomeFragment extends Fragment {
     }
 
     /**
-     * Uploads the chosen to Firebase Storage
+     * Uploads the chosen image to Firebase Storage
      * @param nb_id Id of the notebook that the file has to be linked to
      */
     private void uploadImage(final int nb_id) {
