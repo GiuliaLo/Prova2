@@ -1,4 +1,4 @@
-# Prova2
+# SmartNotebook
 
 Capstone Project for CS major at Westminster College.
 
